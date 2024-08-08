@@ -1,0 +1,51 @@
+server:
+  port: 8181
+
+spring:
+  application:
+    name: stackover-resource-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/stackover_resource_service?characterEncoding=UTF-8&useUnicode=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        order_inserts: true
+        enable_lazy_load_no_trans: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+          batch_size: 20
+        generate_statistics: false
+    show-sql: true
+    database: postgresql
+
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+      httpclient:
+        connection-timeout: 5000
+        ok-http:
+          read-timeout: 5000
+
+  liquibase:
+    enabled: false
+    change-log: db/changelog/db.changelog-master.xml
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+#    для запуска более одного инстанса -> ${spring.application.name}:${random.uuid}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
