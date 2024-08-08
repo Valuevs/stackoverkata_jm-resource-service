@@ -26,7 +26,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "user_entity")
-public class AbstractUser {
+public abstract class AbstractUser {
 
     @Id
     @GeneratedValue(generator = "ID_GENERATOR_POOLED")
