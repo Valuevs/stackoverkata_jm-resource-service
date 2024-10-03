@@ -1,4 +1,4 @@
-# StackOver-Resource-Service
+# StackOverKata_jm - Resource-Service
 
 # Документация KataStackOverflow
 
