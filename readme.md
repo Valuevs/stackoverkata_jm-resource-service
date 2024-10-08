@@ -620,7 +620,7 @@ this.mockMvc
 Оба профиля используют переменные окружения для параметров подключения к базе данных.
 - Пример:
 
-![](src/main/resources/static/images/profile_example.PNG)
+![](src/main/resources/static/images/profile_example.png)
 - Код для копирования (Структура и наполнение обоих файлов одинаковы):
 ```
 spring:
@@ -633,7 +633,7 @@ spring:
 Так же в основном файле конфигурации необходимо указать переменную профиля.
 - Пример:
 
-![](src/main/resources/static/images/config_profile_example.PNG)
+![](src/main/resources/static/images/config_profile_example.png)
 - Код для копирования:
 ```
 spring:
@@ -642,7 +642,7 @@ spring:
 ```
 ## Установка переменных окружения
 Перед запуском приложения установите переменные окружения в "Edit Configurations"
-![](src/main/resources/static/images/edit_configurations.PNG)
+![](src/main/resources/static/images/edit_configurations.png)
 1. Добавьте "Environment variables" и "VM options".
 2. Установите значения (value) для переменных окружения (name)
 3. Установите переменную активного профиля в "VM Options" (-ea -Dspring.profiles.active=local # или dev).
