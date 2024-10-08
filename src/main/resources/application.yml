@@ -5,15 +5,18 @@ spring:
   application:
     name: stackover-resource-service
 
+  profiles:
+    active: ${APP_PROFILE}
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/stackover_resource_service?characterEncoding=UTF-8&useUnicode=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: postgres
-    password: root
+#    url: jdbc:postgresql://localhost:5432/stackover_resource_service?characterEncoding=UTF-8&useUnicode=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+#    username: postgres
+#    password: root
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         order_inserts: true
@@ -37,7 +40,7 @@ spring:
           read-timeout: 5000
 
   liquibase:
-    enabled: false
+    enabled: true
     change-log: db/changelog/db.changelog-master.xml
 
 eureka:
