@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой профиль</title>
+    <style>
+        header {
+            display: flex;
+            flex-wrap: nowrap;
+            padding: 0;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header img {
+            max-height: 100px;
+        }
+
+        nav {
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        form {
+            margin-left: auto;
+        }
+
+        ul.nav {
+            list-style-type: none;
+            padding-left: 0;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <a href="#" class="col-md-3 col-lg-2 d-md-block me-5">
+        <img src="path/to/your/logo.png" alt="Логотип" style="max-height: 100px;">
+    </a>
+
+    <nav class="d-flex justify-content-start align-items-center">
+        <div class="me-3">
+            <h1>Мой профиль</h1>
+        </div>
+        <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Поиск">
+            <button class="btn btn-outline-success" type="submit">Поиск</button>
+        </form>
+    </nav>
+</header>
+
+<nav class="col-md-2 col-lg-4 d-none d-md-block">
+    <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Главная</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Вопросы</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Метки</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Участники</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Неотвеченные</a></li>
+    </ul>
+</nav>
+</body>
+</html>
