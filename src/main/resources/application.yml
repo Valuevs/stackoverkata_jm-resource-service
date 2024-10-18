@@ -46,7 +46,9 @@ spring:
 eureka:
   instance:
     instance-id: ${spring.application.name}:${server.port}
-#    для запуска более одного инстанса -> ${spring.application.name}:${random.uuid}
+    hostname: localhost
+    prefer-ip-address: true
+  #    для запуска более одного инстанса -> ${spring.application.name}:${random.uuid}
   client:
     register-with-eureka: true
     fetch-registry: true
