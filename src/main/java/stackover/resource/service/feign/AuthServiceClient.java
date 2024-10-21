@@ -13,9 +13,6 @@ public interface AuthServiceClient {
     @GetMapping("/api/internal/account/{accountId}/exists")
     Boolean isAccountExist(@PathVariable Long accountId);
 
-
-
-
     @Component
     class AuthServiceFallbackFactory implements FallbackFactory<FallbackWithFactory> {
         @Override
