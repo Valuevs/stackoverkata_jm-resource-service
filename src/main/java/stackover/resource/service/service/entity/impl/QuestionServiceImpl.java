@@ -32,4 +32,9 @@ public class QuestionServiceImpl implements QuestionService {
         question.setUser(user);
         return questionRepository.save(question);
     }
+
+    @Override
+    public Optional<Question> findById(Long id) {
+        return questionRepository.findById(id);
+    }
 }
