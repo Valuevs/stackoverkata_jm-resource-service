@@ -1,0 +1,16 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update # или "create-drop" для создания/удаления схемы перед каждым тестом
+    show-sql: true
+  flyway:
+    enabled: false
+  liquibase:
+    enabled: false
+
+logging:
+  level:
+    org.springframework.boot: INFO
+    org.springframework.boot.autoconfigure: INFO
+    org.hibernate: INFO
+    org.hibernate.hql.internal.ast.QueryTranslatorImpl: INFO
