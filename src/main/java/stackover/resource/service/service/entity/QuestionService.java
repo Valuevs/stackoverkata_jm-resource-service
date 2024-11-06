@@ -11,4 +11,6 @@ public interface QuestionService {
     Optional<Question> findByIdAndUser_AccountId(Long id, Long accountId);
 
     Question saveNewQuestion(QuestionCreateRequestDto questionCreateRequest, User user);
+
+    Optional<Question> findById(Long id);
 }

@@ -1,9 +1,8 @@
 package stackover.resource.service.service.dto.impl;
-
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import stackover.resource.service.entity.user.User;
-import stackover.resource.service.repository.entity.QuestionsRepository;
+import stackover.resource.service.repository.entity.UserRepository;
 
 import java.util.Optional;
 
@@ -12,7 +11,7 @@ import java.util.Optional;
 public class UserService {
 
 
-    private final QuestionsRepository.UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public Optional<User> findById(Long id) {
         // Заглушка: возвращаем любого пользователя из базы данных
