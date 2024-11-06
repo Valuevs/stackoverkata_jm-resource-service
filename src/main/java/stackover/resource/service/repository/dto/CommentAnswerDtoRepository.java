@@ -3,7 +3,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import stackover.resource.service.dto.response.CommentAnswerResponseDto;
-import stackover.resource.service.entity.question.answer.Answer;
 import stackover.resource.service.entity.question.answer.CommentAnswer;
 
 import java.util.Optional;
@@ -31,8 +30,7 @@ public interface CommentAnswerDtoRepository extends JpaRepository<CommentAnswer,
     Optional<CommentAnswerResponseDto> findCommentAnswerResponseDtoById(@Param("commentAnswerId") Long commentAnswerId);
 
 
-    @Query("SELECT a FROM Answer a JOIN FETCH a.question WHERE a.id = :id")
-    Optional<Answer> findByIdWithQuestion(@Param("id") Long id);
+
 }
 
 

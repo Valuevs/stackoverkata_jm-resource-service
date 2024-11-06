@@ -2,8 +2,6 @@ package stackover.resource.service.service.dto.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import stackover.resource.service.dto.response.CommentAnswerResponseDto;
@@ -14,11 +12,9 @@ import stackover.resource.service.entity.question.answer.Answer;
 import stackover.resource.service.entity.question.answer.CommentAnswer;
 import stackover.resource.service.entity.user.User;
 import stackover.resource.service.repository.dto.CommentAnswerDtoRepository;
-import stackover.resource.service.repository.entity.QuestionRepository;
-import stackover.resource.service.repository.entity.UserRepository;
+import stackover.resource.service.service.entity.QuestionService;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,19 +22,20 @@ import java.util.Optional;
 public class CommentAnswerService {
 
     private final CommentAnswerDtoRepository commentAnswerRepository;
-    private final UserRepository userRepository;
-    private final QuestionRepository questionRepository;
+    private final UserService userService;
+    private final QuestionService questionService;
+    private final AnswerService answerService;
 
 
     @Transactional
     public CommentAnswerResponseDto addCommentToAnswer(Long questionId, Long answerId, String text, Long accountId) {
-        User user = userRepository.findById(accountId)
+        User user = userService.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
 
-        Question question = questionRepository.findById(questionId)
+        Question question = questionService.findById(questionId)
                 .orElseThrow(() -> new IllegalArgumentException("Вопрос не найден"));
 
-        Answer answer = commentAnswerRepository.findByIdWithQuestion(answerId)
+        Answer answer = answerService.findByIdWithQuestion(answerId)
                 .filter(a -> a.getQuestion().getId().equals(questionId))
                 .orElseThrow(() -> new IllegalArgumentException("Ответ не принадлежит вопросу"));
 
@@ -56,5 +53,7 @@ public class CommentAnswerService {
                 .orElseThrow(() -> new IllegalArgumentException("Комментарий не найден"));
     }
 
-
+    public CommentAnswer saveCommentAnswer(CommentAnswer commentAnswer) {
+        return commentAnswerRepository.save(commentAnswer);
+    }
 }

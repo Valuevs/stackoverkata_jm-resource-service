@@ -1,7 +1,6 @@
 package stackover.resource.service.rest.out;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,18 +12,19 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import stackover.resource.service.dto.response.AnswerResponseDto;
 import stackover.resource.service.dto.response.CommentAnswerResponseDto;
+import stackover.resource.service.service.dto.impl.CommentAnswerService;
+import io.swagger.v3.oas.annotations.Parameter;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import stackover.resource.service.dto.response.AnswerResponseDto;
 import stackover.resource.service.feign.AuthServiceClient;
 import stackover.resource.service.service.dto.AnswerDtoService;
-import stackover.resource.service.service.dto.impl.CommentAnswerService;
 import stackover.resource.service.service.entity.QuestionService;
 
 import java.util.List;
@@ -76,7 +76,7 @@ public class ResourceAnswerController {
 
 
 
-    @PostMapping("/{questionId}/answer/{answerId}/comment")
+    @PostMapping("/{answerId}/comment")
     @Operation(summary = "Добавление комментария к ответу", description = "Добавляет комментарий к ответу на вопрос")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комментарий успешно добавлен", content = {
@@ -94,8 +94,4 @@ public class ResourceAnswerController {
         CommentAnswerResponseDto responseDto = commentAnswerService.addCommentToAnswer(questionId, answerId, commentText, accountId);
         return ResponseEntity.ok(responseDto);
     }
-
-
-
-
 }

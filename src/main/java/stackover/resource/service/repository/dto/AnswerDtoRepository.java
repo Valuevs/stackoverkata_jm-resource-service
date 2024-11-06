@@ -6,8 +6,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import stackover.resource.service.dto.response.AnswerResponseDto;
 import stackover.resource.service.entity.question.answer.Answer;
-
 import java.util.List;
+
 
 @Repository
 public interface AnswerDtoRepository extends JpaRepository<Answer, Long> {
@@ -36,4 +36,6 @@ public interface AnswerDtoRepository extends JpaRepository<Answer, Long> {
             """)
     List<AnswerResponseDto> getAnswersDtoByQuestionId(@Param("questionId") Long questionId,
                                                       @Param("accountId") Long accountId);
+
+
 }
