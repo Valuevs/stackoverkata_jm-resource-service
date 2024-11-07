@@ -24,6 +24,7 @@ public class QuestionServiceImpl implements QuestionService {
         return questionRepository.findByIdAndUser_AccountId(id, accountId);
     }
 
+
     @Override
     public Question saveNewQuestion(QuestionCreateRequestDto questionCreateRequest, User user) {
         Question question = new Question();
