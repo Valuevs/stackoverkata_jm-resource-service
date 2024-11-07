@@ -19,9 +19,11 @@ public class QuestionServiceImpl implements QuestionService {
 
     private final TagService tagService;
 
+    @Override
     public Optional<Question> findByIdAndUser_AccountId(Long id, Long accountId) {
         return questionRepository.findByIdAndUser_AccountId(id, accountId);
     }
+
 
     @Override
     public Question saveNewQuestion(QuestionCreateRequestDto questionCreateRequest, User user) {
