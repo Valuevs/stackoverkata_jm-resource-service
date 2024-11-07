@@ -17,14 +17,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import stackover.resource.service.converters.AnswerConverter;
+import stackover.resource.service.dto.request.AnswerRequestDto;
+import stackover.resource.service.dto.response.AnswerResponseDto;
 import stackover.resource.service.dto.response.CommentAnswerResponseDto;
+import stackover.resource.service.entity.question.answer.Answer;
+import stackover.resource.service.exception.AnswerException;
+import stackover.resource.service.exception.QuestionException;
 import stackover.resource.service.service.dto.impl.CommentAnswerService;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import stackover.resource.service.dto.response.AnswerResponseDto;
 import stackover.resource.service.feign.AuthServiceClient;
 import stackover.resource.service.service.dto.AnswerDtoService;
+import stackover.resource.service.service.entity.AbstractService;
 import stackover.resource.service.service.entity.QuestionService;
 
 import java.util.List;
@@ -43,6 +49,10 @@ public class ResourceAnswerController {
     private final QuestionService questionService;
 
     private final CommentAnswerService commentAnswerService;
+
+    private final AnswerConverter answerConverter;
+
+    private final AbstractService<Answer, Long> answerService;
 
     @Operation(summary = "Получение списка ответов по questionId и userId",
             description = "Возвращает список ответов на вопрос по ID вопроса"
@@ -74,8 +84,6 @@ public class ResourceAnswerController {
         return ResponseEntity.ok(answerDtoService.getAnswerDtoByQuestionId(questionId, accountId));
     }
 
-
-
     @PostMapping("/{answerId}/comment")
     @Operation(summary = "Добавление комментария к ответу", description = "Добавляет комментарий к ответу на вопрос")
     @ApiResponses(value = {
@@ -89,9 +97,37 @@ public class ResourceAnswerController {
             @PathVariable Long questionId,
             @PathVariable Long answerId,
             @RequestParam @Positive Long accountId,
-            @RequestBody @NotNull @NotEmpty String commentText) {
-
+            @RequestBody @NotNull @NotEmpty String commentText)
+    {
         CommentAnswerResponseDto responseDto = commentAnswerService.addCommentToAnswer(questionId, answerId, commentText, accountId);
         return ResponseEntity.ok(responseDto);
+    }
+
+    @Operation(summary = "Добавление ответа", description = "Добавляет ответ к вопросу")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Ответ успешно добавен"),
+            @ApiResponse(responseCode = "400", description = "Неправильный параметр"),
+            @ApiResponse(responseCode = "404", description = "Вопрос не найден")
+    })
+    @PostMapping
+    public ResponseEntity<AnswerResponseDto> addAnswerToQuestion(
+            @Parameter(name = "id", description = "ID вопроса")
+            @PathVariable Long questionId,
+            @Parameter(name = "id", description = "ID пользователя")
+            @RequestParam @Positive Long accountId,
+            @RequestBody AnswerRequestDto answerRequestDto)
+    {
+        log.info("Добавление ответа на questionId: {} от userId: {}", questionId, accountId);
+//       TODO: раскомментировать, когда auth сервис будет реализован
+//        if (!authServiceClient.isAccountExist(accountId)) {
+//            log.info("Отве не был получен. причина: {}", "Account not found");
+//            return ResponseEntity.badRequest().build();
+//        }
+        questionService.findById(questionId).orElseThrow(() -> new QuestionException("Вопрос не найден."));
+        Answer answer = answerService.save(answerConverter.answerRequestDtoToAnswer(answerRequestDto));
+        log.info("Ответ был успешно добавлен. answerId: {}, questionId: {}", answer.getId(), questionId);
+        return ResponseEntity
+                .ok(answerDtoService.getAnswerResponseDtoById(answer.getId())
+                        .orElseThrow(() -> new AnswerException("Ответ не найден.")));
     }
 }
