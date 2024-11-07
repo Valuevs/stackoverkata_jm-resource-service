@@ -8,6 +8,7 @@ import stackover.resource.service.repository.dto.AnswerDtoRepository;
 import stackover.resource.service.service.dto.AnswerDtoService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,5 +20,10 @@ public class AnswerServiceDtoImpl implements AnswerDtoService {
     @Override
     public List<AnswerResponseDto> getAnswerDtoByQuestionId(Long questionId, Long accountId) {
         return answerDtoRepository.getAnswersDtoByQuestionId(questionId, accountId);
+    }
+
+    @Override
+    public Optional<AnswerResponseDto> getAnswerResponseDtoById(Long answerId) {
+        return answerDtoRepository.getAnswerResponseDtoById(answerId);
     }
 }
