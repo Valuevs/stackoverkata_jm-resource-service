@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import stackover.resource.service.feign.AuthServiceClient;
 import stackover.resource.service.service.dto.AnswerDtoService;
 import stackover.resource.service.service.entity.AbstractService;
+import stackover.resource.service.service.entity.AnswerServices;
 import stackover.resource.service.service.entity.QuestionService;
 
 import java.util.List;
@@ -43,6 +45,8 @@ import java.util.List;
 public class ResourceAnswerController {
 
     private final AnswerDtoService answerDtoService;
+
+    private final AnswerServices answerServices;
 
     private final AuthServiceClient authServiceClient;
 
@@ -129,5 +133,22 @@ public class ResourceAnswerController {
         return ResponseEntity
                 .ok(answerDtoService.getAnswerResponseDtoById(answer.getId())
                         .orElseThrow(() -> new AnswerException("Ответ не найден.")));
+    }
+    @PostMapping("/{answerId}/downVote")
+    @Operation(summary = "Голосование за ответ", description = "Голосование за ответ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Общее число голосов",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Long.class))}),
+            @ApiResponse(responseCode = "400", description = "Отсутствие ответа",
+                    content = @Content)})
+    public ResponseEntity<Long> downVoteAnswer(
+            @PathVariable Long questionId,
+            @PathVariable Long answerId,
+            @RequestParam @Positive Long accountId) {
+        log.info("Создается голосование для вопроса {}, ответа {}, пользователем {}.", questionId, answerId, accountId);
+        Long totalVotingCount = answerServices.downVoteAnswer(questionId, answerId, accountId);
+        log.info("Пользователь {} проголосовал за ответ {}. Общее кол-во голосов {}", accountId, answerId, totalVotingCount);
+        return new ResponseEntity<>(totalVotingCount, HttpStatus.OK);
     }
 }
