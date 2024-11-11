@@ -4,22 +4,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import stackover.resource.service.dto.response.TagResponseDto;
 import stackover.resource.service.entity.question.Tag;
+import stackover.resource.service.entity.user.reputation.ReputationType;
+import stackover.resource.service.repository.dto.TagDtoRepository;
 import stackover.resource.service.repository.entity.TagRepository;
 import stackover.resource.service.service.entity.TagService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TagServiceImpl extends AbstractServiceImpl<Tag, Long> implements TagService {
 
     private final TagRepository tagRepository;
 
-    public TagServiceImpl(TagRepository tagRepository) {
+    private final TagDtoRepository tagDtoRepository;
+
+
+    public TagServiceImpl(TagRepository tagRepository, TagDtoRepository tagDtoRepository) {
         super(tagRepository);
         this.tagRepository = tagRepository;
+        this.tagDtoRepository = tagDtoRepository;
     }
+
+
 
     @Override
     public boolean existsByName(String name) {
@@ -48,4 +57,12 @@ public class TagServiceImpl extends AbstractServiceImpl<Tag, Long> implements Ta
 
         return tags;
     }
+
+    @Override
+    public  List<TagResponseDto> getTop3TagsByUserId(Long userId, ReputationType type) {
+        return tagDtoRepository.getTop3TagsByUserId(userId,ReputationType.VOTE_ANSWER).stream()
+                .limit(3)
+                .collect(Collectors.toList());
+    }
 }
+

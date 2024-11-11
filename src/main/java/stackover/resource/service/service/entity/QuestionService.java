@@ -13,5 +13,4 @@ public interface QuestionService {
     Optional<Question> findById(Long id);
 
     Question saveNewQuestion(QuestionCreateRequestDto questionCreateRequest, User user);
-
 }
