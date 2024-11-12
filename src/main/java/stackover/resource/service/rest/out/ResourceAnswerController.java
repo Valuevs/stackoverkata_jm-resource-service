@@ -23,8 +23,10 @@ import stackover.resource.service.dto.request.AnswerRequestDto;
 import stackover.resource.service.dto.response.AnswerResponseDto;
 import stackover.resource.service.dto.response.CommentAnswerResponseDto;
 import stackover.resource.service.entity.question.answer.Answer;
+import stackover.resource.service.exception.AccountExistException;
 import stackover.resource.service.exception.AnswerException;
 import stackover.resource.service.exception.QuestionException;
+import stackover.resource.service.repository.entity.UserRepository;
 import stackover.resource.service.service.dto.impl.CommentAnswerService;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,6 +59,8 @@ public class ResourceAnswerController {
     private final AnswerConverter answerConverter;
 
     private final AbstractService<Answer, Long> answerService;
+
+    private final UserRepository mockAuthFeignClient;
 
     @Operation(summary = "Получение списка ответов по questionId и userId",
             description = "Возвращает список ответов на вопрос по ID вопроса"
@@ -109,9 +113,10 @@ public class ResourceAnswerController {
 
     @Operation(summary = "Добавление ответа", description = "Добавляет ответ к вопросу")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Ответ успешно добавен"),
+            @ApiResponse(responseCode = "201", description = "Ответ успешно добавен"),
             @ApiResponse(responseCode = "400", description = "Неправильный параметр"),
-            @ApiResponse(responseCode = "404", description = "Вопрос не найден")
+            @ApiResponse(responseCode = "404", description = "Вопрос не найден"),
+            @ApiResponse(responseCode = "422", description = "Данные структурно верны, но логически некорректны")
     })
     @PostMapping
     public ResponseEntity<AnswerResponseDto> addAnswerToQuestion(
@@ -127,12 +132,28 @@ public class ResourceAnswerController {
 //            log.info("Отве не был получен. причина: {}", "Account not found");
 //            return ResponseEntity.badRequest().build();
 //        }
-        questionService.findById(questionId).orElseThrow(() -> new QuestionException("Вопрос не найден."));
-        Answer answer = answerService.save(answerConverter.answerRequestDtoToAnswer(answerRequestDto));
-        log.info("Ответ был успешно добавлен. answerId: {}, questionId: {}", answer.getId(), questionId);
-        return ResponseEntity
-                .ok(answerDtoService.getAnswerResponseDtoById(answer.getId())
-                        .orElseThrow(() -> new AnswerException("Ответ не найден.")));
+        AnswerResponseDto response;
+        try {
+            // TODO: заглушка пока сервис не реализован.
+            //  try catch конструкцию убрать, когда будет релизован RestControllerAdvice
+            mockAuthFeignClient.findByAccountId(accountId).orElseThrow(() -> new AccountExistException("Account not found."));
+
+            questionService.findById(questionId).orElseThrow(() -> new QuestionException("Question not found."));
+            Answer answer = answerService.save(answerConverter.answerRequestDtoToAnswer(answerRequestDto));
+            response = answerDtoService.getAnswerResponseDtoById(answer.getId()).get();
+        } catch(AccountExistException e) {
+            log.warn("With accountId = {}, msg: {}", accountId, e.getMessage());
+            return ResponseEntity.badRequest().build();
+        } catch(QuestionException e) {
+            log.warn("With questionId = {}, msg: {}", questionId, e.getMessage());
+            return ResponseEntity.notFound().build();
+        } catch(Exception e) {
+            log.warn("Тело реквеста не валидно. msg: {}", e.getMessage());
+            return ResponseEntity.unprocessableEntity().build();
+        }
+
+        log.info("Ответ был успешно добавлен. answerId: {}, questionId: {}", response.id(), questionId);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
     @PostMapping("/{answerId}/downVote")
     @Operation(summary = "Голосование за ответ", description = "Голосование за ответ")
