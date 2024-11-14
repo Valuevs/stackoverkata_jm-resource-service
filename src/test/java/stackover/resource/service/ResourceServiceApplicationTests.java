@@ -34,13 +34,13 @@ public class ResourceServiceApplicationTests {
                     .withUsername("tester")
                     .withPassword("pass");
     @Autowired
-    private MockMvc mockMvc;
+    protected MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    protected ObjectMapper objectMapper;
 
     @Autowired
-    private EntityManager entityManager;
+    protected EntityManager entityManager;
 
     @Test
     void contextLoads() {
