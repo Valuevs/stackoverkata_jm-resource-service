@@ -12,7 +12,7 @@ spring:
 #    url: jdbc:postgresql://localhost:5432/stackover_resource_service?characterEncoding=UTF-8&useUnicode=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 #    username: postgres
 #    password: root
-    driver-class-name: org.postgresql.Driver
+#    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:

@@ -1,6 +1,7 @@
 package stackover.resource.service.service.entity.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import stackover.resource.service.dto.response.QuestionCreateRequestDto;
 import stackover.resource.service.entity.question.Question;
@@ -8,9 +9,9 @@ import stackover.resource.service.entity.user.User;
 import stackover.resource.service.repository.entity.QuestionRepository;
 import stackover.resource.service.service.entity.QuestionService;
 import stackover.resource.service.service.entity.TagService;
-
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QuestionServiceImpl implements QuestionService {
@@ -38,5 +39,10 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public Optional<Question> findById(Long id) {
         return questionRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Question> findQuestionByIdIfNotCreatedBy(Long questionId, Long accountId) {
+        return questionRepository.findByIdAndUser_AccountIdNot(questionId, accountId);
     }
 }

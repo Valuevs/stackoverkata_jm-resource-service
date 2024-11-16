@@ -23,6 +23,11 @@ public class ReputationServiceImpl extends AbstractServiceImpl<Reputation, Long>
     }
 
     @Override
+    public Optional<Reputation> findByAuthorIdAndQuestionId(Long authorId, Long questionId) {
+        return reputationRepository.findByAuthor_IdAndQuestion_Id(authorId, questionId);
+    }
+
+    @Override
     public Optional<Reputation> findById(Long id) {
         return reputationRepository.findById(id);
     }
@@ -45,20 +50,7 @@ public class ReputationServiceImpl extends AbstractServiceImpl<Reputation, Long>
         reputationRepository.deleteById(id);
     }
 
-    public Optional<Reputation> findByAuthorIdAndQuestionId(Long authorId, Long questionId) {
-        return reputationRepository.findByAuthor_IdAndQuestion_Id(authorId, questionId);
-    }
-
     @Override
-    public boolean existsById(Long id) {
-        return reputationRepository.existsById(id);
-    }
-
-    @Override
-    public Optional<Reputation> findBySenderAndAnswerAndType(Long userSenderId, Long answerId, ReputationType reputationType) {
-        return reputationRepository.findBySenderIdAndAnswerIdAndType(userSenderId, answerId, reputationType);
-    }
-
     @Transactional
     public void setDownReputationToQuestion(User user, Question question) {
         Reputation reputation = findByAuthorIdAndQuestionId(user.getId(), question.getId()).orElse(null);
@@ -74,6 +66,41 @@ public class ReputationServiceImpl extends AbstractServiceImpl<Reputation, Long>
             reputationRepository.saveAndFlush(reputation);
         }
     }
+
+    @Override
+    public Reputation createInitialUpReputation(User author, User sender, Question question) {
+        Reputation newReputation = new Reputation();
+        newReputation.setAuthor(author);
+        newReputation.setSender(sender);
+        newReputation.setCount(10);
+        newReputation.setType(ReputationType.VOTE_QUESTION);
+        newReputation.setQuestion(question);
+        return newReputation;
+    }
+
+    // Если пользователь еще не голосовал <за> вопрос, то создается новая репутация равная 10;
+    // Если пользователь уже проголосовал <за> вопрос, то при повторном голосовании репутация получает значение 10;
+    // Если пользователь уже проголосовал <против>, то репутация получает новое значение 10;
+    @Override
+    @Transactional
+    public void updateOrCreateReputationForQuestion(User sender, Question question) {
+        User questionAuthor = question.getUser();
+        findByQuestionIdAndSenderIdAndAuthorIdAndType(question.getId(), sender.getId(), questionAuthor.getId(), ReputationType.VOTE_QUESTION).ifPresentOrElse(
+                reputation -> {
+                    reputation.setCount(10);
+                    update(reputation);
+                },
+                () -> save(createInitialUpReputation(questionAuthor, sender, question))
+        );
+    }
+
+    @Override
+    public Optional<Reputation> findBySenderAndAnswerAndType(Long userSenderId, Long answerId, ReputationType reputationType) {
+        return reputationRepository.findBySenderIdAndAnswerIdAndType(userSenderId, answerId, reputationType);
+    }
+
+    @Override
+    public Optional<Reputation> findByQuestionIdAndSenderIdAndAuthorIdAndType(Long questionId, Long senderId, Long authorId, ReputationType type) {
+        return reputationRepository.findByQuestionIdAndSenderIdAndAuthorIdAndType(questionId, senderId, authorId, type);
+    }
 }
-
-

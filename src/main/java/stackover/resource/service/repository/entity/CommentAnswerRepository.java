@@ -8,5 +8,4 @@ import java.util.Optional;
 public interface CommentAnswerRepository extends JpaRepository<CommentAnswer, Long> {
     Optional<CommentAnswer> findByAnswerId(Long commentAnswerId);
     CommentAnswer save(CommentAnswer commentAnswer);
-
 }

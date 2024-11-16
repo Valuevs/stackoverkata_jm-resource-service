@@ -19,11 +19,14 @@ import stackover.resource.service.dto.response.QuestionCreateRequestDto;
 import stackover.resource.service.dto.response.QuestionResponseDto;
 import stackover.resource.service.entity.question.Question;
 import stackover.resource.service.entity.user.User;
-import stackover.resource.service.feign.AuthServiceClient;
 import stackover.resource.service.repository.entity.UserRepository;
 import stackover.resource.service.service.dto.QuestionDtoService;
 import stackover.resource.service.service.entity.QuestionService;
+import stackover.resource.service.service.entity.UserService;
 import stackover.resource.service.service.entity.VoteQuestionService;
+
+import java.util.Optional;
+
 
 @RestController
 @Slf4j
@@ -31,12 +34,11 @@ import stackover.resource.service.service.entity.VoteQuestionService;
 @RequestMapping("/api/user/question")
 @Tag(name = "Question API")
 public class ResourceQuestionController {
-
-    private final AuthServiceClient authServiceClient;
-
     private final QuestionDtoService questionDtoService;
 
     private final QuestionService questionService;
+
+    private final UserService userService;
 
     private final VoteQuestionService voteQuestionService;
 
@@ -109,5 +111,39 @@ public class ResourceQuestionController {
         log.info("Репутация accountId: {} уменьшилась на: {}", accountId, 5);
 
         return ResponseEntity.ok(questionVoteSum);
+    }
+
+    @Operation(summary = "Голосование за вопрос", description = "Позволяет пользователю проголосовать 'за' конкретный вопрос.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешное голосование за вопрос и возврат суммы голосов"),
+            @ApiResponse(responseCode = "404", description = "Аккаунт или вопрос не найдены"),
+    })
+    @PostMapping("/{questionId}/upVote")
+    public ResponseEntity<Long> upVoteQuestion(
+            @PathVariable @Positive Long questionId,
+            @RequestParam @Positive Long accountId) {
+
+        // Логируем параметры
+        log.info("Получен запрос на голос 'за' для вопроса с ID: {} от пользователя с ID: {}", questionId, accountId);
+
+        // TODO: Удалить заглушку, когда #stackover-auth-service будет полностью реализован
+        // Проверяем наличие аккаунта (заглушка для сервиса аутентификации)
+        Optional<User> userOptional = userService.findByAccountId(accountId);
+        if (userOptional.isEmpty()) {
+            log.warn("Пользователь с ID: {} не найден", accountId);
+            return ResponseEntity.notFound().build();
+        }
+
+        // Проверка, существует ли вопрос
+        Optional<Question> questionOptional = questionService.findQuestionByIdIfNotCreatedBy(questionId, accountId);
+        if (questionOptional.isEmpty()) {
+            log.info("Вопрос с ID: {} не найден", questionId);
+            return ResponseEntity.notFound().build();
+        }
+
+        Long voteSum = voteQuestionService.setUpVoteQuestion(questionOptional.get(), userOptional.get());
+        log.info("Успешно обновилась репутация за вопрос ID: {}.", questionId);
+
+        return ResponseEntity.ok(voteSum);
     }
 }
