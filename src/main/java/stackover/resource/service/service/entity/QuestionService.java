@@ -1,5 +1,6 @@
 package stackover.resource.service.service.entity;
 
+
 import stackover.resource.service.dto.response.QuestionCreateRequestDto;
 import stackover.resource.service.entity.question.Question;
 import stackover.resource.service.entity.user.User;
@@ -13,4 +14,7 @@ public interface QuestionService {
     Optional<Question> findById(Long id);
 
     Question saveNewQuestion(QuestionCreateRequestDto questionCreateRequest, User user);
+
+    Optional<Question> findQuestionByIdIfNotCreatedBy(Long questionId, Long accountId);
+
 }

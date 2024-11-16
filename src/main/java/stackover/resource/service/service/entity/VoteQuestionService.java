@@ -10,5 +10,11 @@ public interface VoteQuestionService extends AbstractService<VoteQuestion, Long>
 
     long setDownVoteToQuestionByUser(Question question, User user);
 
+    long calculateVoteSum(Question question);
+
     Optional<VoteQuestion> findByUserAndQuestion(User user, Question question);
+
+    Optional<VoteQuestion> findVoteQuestion(Question question, User sender);
+
+    long setUpVoteQuestion(Question question, User sender);
 }
